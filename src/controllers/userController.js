@@ -1,4 +1,6 @@
 import userService from "../services/userService";
+import db from "../models/index.js";
+
 let handleLogin = async (req, res) => {
   let mail = req.body.email;
   let pass = req.body.password;
@@ -10,7 +12,7 @@ let handleLogin = async (req, res) => {
     });
   }
 
-  let userData = await user.handleUserLogin(mail, pass);
+  let userData = await userService.handleUserLogin(mail, pass);
   return res.status(200).json({
     errCode: userData.errCode,
     message: userData.errMessage,

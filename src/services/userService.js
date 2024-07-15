@@ -50,6 +50,7 @@ let handleUserLogin = (email, password) => {
       }
       resolve(userData);
     } catch (error) {
+      console.log(error);
       reject(error);
     }
   });
@@ -100,22 +101,23 @@ let createNewUser = (data) => {
           errMessage:
             "Your email is already in used. Please try another email!",
         });
+      } else {
+        let hashPassword = await hashUserPassword(data.password);
+        await db.User.create({
+          email: data.email,
+          password: hashPassword,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          address: data.address,
+          phoneNumber: data.phoneNumber,
+          gender: data.gender === 1 ? true : false,
+          roleId: data.roleId,
+        });
+        resolve({
+          errCode: 0,
+          errMessage: "OK",
+        });
       }
-      let hashPassword = await hashUserPassword(data.password);
-      await db.User.create({
-        email: data.email,
-        password: hashPassword,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        address: data.address,
-        phoneNumber: data.phoneNumber,
-        gender: data.gender === 1 ? true : false,
-        roleId: data.roleId,
-      });
-      resolve({
-        errCode: 0,
-        errMessage: "OK",
-      });
     } catch (error) {
       reject(error);
     }

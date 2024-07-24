@@ -1,7 +1,7 @@
 import { where } from "sequelize";
 import db from "../models/index";
+import _, { intersection } from "lodash";
 require("dotenv").config();
-import _ from "lodash";
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 let getTopDoctorHome = (limitInput) => {
   return new Promise(async (resolve, reject) => {
@@ -62,13 +62,20 @@ let saveDetailInfoDoctor = (inputData) => {
         !inputData.doctorId ||
         !inputData.contentHTML ||
         !inputData.contentMarkdown ||
-        !inputData.action
+        !inputData.action ||
+        !inputData.selectedPrice ||
+        !inputData.selectedPayment ||
+        !inputData.selectedProvince ||
+        !inputData.addressClinic ||
+        !inputData.nameClinic ||
+        !inputData.note
       ) {
         resolve({
           errCode: 1,
           errMessage: "Missing required parameters",
         });
       } else {
+        //upsert to markdown table
         if (inputData.action === "CREATE") {
           await db.Markdown.create({
             contentHTML: inputData.contentHTML,
@@ -87,6 +94,33 @@ let saveDetailInfoDoctor = (inputData) => {
             doctorMarkdown.description = inputData.description;
             await doctorMarkdown.save();
           }
+        }
+        //upsert to doctor_info table
+        let doctorInfo = await db.Doctor_infor.findOne({
+          where: { doctorId: inputData.doctorId },
+          raw: false,
+        });
+        if (doctorInfo) {
+          //update
+          doctorInfo.doctorId = inputData.doctorId;
+          doctorInfo.priceId = inputData.selectedPrice;
+          doctorInfo.provinceId = inputData.selectedProvince;
+          doctorInfo.paymentId = inputData.selectedPayment;
+          doctorInfo.addressClinic = inputData.addressClinic;
+          doctorInfo.nameClinic = inputData.nameClinic;
+          doctorInfo.note = inputData.note;
+          await doctorInfo.save();
+        } else {
+          //create
+          await db.Doctor_infor.create({
+            doctorId: inputData.doctorId,
+            priceId: inputData.selectedPrice,
+            provinceId: inputData.selectedProvince,
+            paymentId: inputData.selectedPayment,
+            addressClinic: inputData.addressClinic,
+            nameClinic: inputData.nameClinic,
+            note: inputData.note,
+          });
         }
         resolve({
           errCode: 0,
@@ -126,6 +160,29 @@ let getDetailDoctorById = (inputId) => {
               model: db.Allcode,
               as: "genderData",
               attributes: ["valueVi", "valueEn"],
+            },
+            {
+              model: db.Doctor_infor,
+              attributes: {
+                exclude: ["id", "doctorId"],
+              },
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "priceTypeData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "provinceTypeData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "paymentTypeData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+              ],
             },
           ],
           raw: false,

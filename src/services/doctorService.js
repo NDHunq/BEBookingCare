@@ -1,6 +1,6 @@
 import { where } from "sequelize";
 import db from "../models/index";
-import _, { intersection } from "lodash";
+import _, { at, intersection } from "lodash";
 require("dotenv").config();
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 let getTopDoctorHome = (limitInput) => {
@@ -260,6 +260,11 @@ let getScheduleByDate = (doctorID, date) => {
               model: db.Allcode,
               as: "timeTypeData",
               attributes: ["valueVi", "valueEn"],
+            },
+            {
+              model: db.User,
+              as: "doctorData",
+              attributes: ["firstName", "lastName"],
             },
           ],
           raw: false,

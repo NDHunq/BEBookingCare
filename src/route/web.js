@@ -73,6 +73,7 @@ let initWebRoutes = (app) => {
     "/api/get-list-patient-for-doctor",
     doctorController.getListPatientForDoctor
   );
+  router.post("/api/send-remedy", doctorController.sendRemedy);
   return app.use("/", router);
 };
 module.exports = initWebRoutes;

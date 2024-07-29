@@ -1,6 +1,8 @@
 import { attempt } from "lodash";
+require("dotenv").config();
+import { where } from "sequelize";
+import db from "../models/index.js";
 
-const db = require("../models");
 let createSpecialty = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -66,13 +68,13 @@ let getDetailSpecialtyById = (inputId, location) => {
         });
         if (data) {
           let doctorSpecialty = [];
-          if ((location = "ALL")) {
-            doctorSpecialty = await db.Doctor_Infor.findAll({
+          if (location === "ALL") {
+            doctorSpecialty = await db.Doctor_infor.findAll({
               where: { specialtyId: inputId },
               attributes: ["doctorId", "provinceId"],
             });
           } else {
-            doctorSpecialty = await db.Doctor_Infor.findAll({
+            doctorSpecialty = await db.Doctor_infor.findAll({
               where: { specialtyId: inputId, provinceId: location },
               attributes: ["doctorId", "provinceId"],
             });

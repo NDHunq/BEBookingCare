@@ -70,7 +70,7 @@ let initWebRoutes = (app) => {
     clinicController.getDetailClinicById
   );
   router.get(
-    "/api/get-list-patient-for-doctor",
+    "/api/get-all-patient-for-doctor",
     doctorController.getListPatientForDoctor
   );
   router.post("/api/send-remedy", doctorController.sendRemedy);

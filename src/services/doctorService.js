@@ -460,6 +460,7 @@ let getListPatientForDoctor = (doctorId, date) => {
 let sendRemedy = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("sendRemedy", data);
       if (
         !data.email ||
         !data.doctorId ||
@@ -491,7 +492,10 @@ let sendRemedy = (data) => {
           errMessage: "OK",
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error at sendRemedy", error);
+      reject(error);
+    }
   });
 };
 module.exports = {

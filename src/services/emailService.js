@@ -80,14 +80,14 @@ let sendAttachment = async (dataSend) => {
       });
       let info = await transporter.sendMail({
         from: `"BookingCare" <${process.env.EMAIL_APP}>`,
-        to: dataSend.receiverEmail,
+        to: dataSend.email,
         subject: "Kết quả đặt lịch khám bệnh",
         html: getBodyHTMLEmailRemedy(dataSend),
         attachments: [
           {
             filename: `remedy-${
               dataSend.patientId
-            }-${new Date().getTime()}.png`,
+            }-${new Date().getTime()}.pdf`,
             content: dataSend.imgBase64.split("base64,")[1],
             encoding: "base64",
           },
